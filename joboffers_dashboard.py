@@ -240,7 +240,7 @@ def make_jobs_stats_row(jobs_df):
     ]
 
 
-def make_jobs_table_row(jobs_df, max_rows=100):
+def make_jobs_table(jobs_df, max_rows=100):
     jobs_df = jobs_df.reset_index()
     jobs_df["subm_date"] = jobs_df["subm_date"].dt.strftime("%Y-%m-%d")
     table_columns = [
@@ -252,7 +252,7 @@ def make_jobs_table_row(jobs_df, max_rows=100):
         "salary",
         "norm_salary",
     ]
-    jobs_df = jobs_df[table_columns]
+    jobs_df = jobs_df[table_columns].head(max_rows)
     return html.Div(
         children=[
             html.Table(
@@ -260,6 +260,7 @@ def make_jobs_table_row(jobs_df, max_rows=100):
                     html.Thead(html.Tr([html.Th(col) for col in jobs_df.columns])),
                     html.Tbody(
                         [
+                            # make_jobs_table_row(row) for row in jobs_df
                             html.Tr(
                                 [
                                     html.Td(
@@ -436,7 +437,7 @@ def on_jobs_query_submit(n_clicks, query_str):
     # Content for chart element:
     jobs_chart = make_jobs_chart(jobs_df)
     # Content for table element:
-    jobs_table = make_jobs_table_row(jobs_df)
+    jobs_table = make_jobs_table(jobs_df)
     return [jobs_stats, jobs_chart, jobs_table]
 
 
@@ -454,6 +455,8 @@ def on_companies_query_submit(n_clicks, query_str):
         )
         companies_df.index = pd.to_datetime(companies_df.index)
     return df_to_table(companies_df)
+
+
 
 
 @app.callback(Output("tab-content", "children"), [Input("tabs-container", "value")])
